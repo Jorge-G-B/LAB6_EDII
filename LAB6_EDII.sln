@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RSAEncryptor", "RSAEncryptor\RSAEncryptor.csproj", "{91836A15-B19B-4547-82D3-5FAD70842F18}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Encryptors", "RSAEncryptor\Encryptors.csproj", "{91836A15-B19B-4547-82D3-5FAD70842F18}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StringEncryptor", "StringEncryptor\StringEncryptor.csproj", "{FD9B25C3-6350-4153-8A3F-9DC2411C3773}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StringEncryptor", "StringEncryptor\StringEncryptor.csproj", "{FD9B25C3-6350-4153-8A3F-9DC2411C3773}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API", "API\API.csproj", "{83BEB954-8E79-46BF-8598-90B9C83CBD31}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "API", "API\API.csproj", "{83BEB954-8E79-46BF-8598-90B9C83CBD31}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
