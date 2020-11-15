@@ -1,6 +1,7 @@
 ﻿using Encryptors.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Encryptors.Encryptors
@@ -14,7 +15,7 @@ namespace Encryptors.Encryptors
         int Q = 0;
         int e = 0;
         public int d = 0;
-        int[] PrimeNumbers = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97};
+        int[] PrimeNumbers = { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97 };
         public void SetVariables(int p, int q)
         {
             P = p;
@@ -23,7 +24,7 @@ namespace Encryptors.Encryptors
             fi = (P - 1) * (Q - 1);
             Random rnd = new Random();
             e = PrimeNumbers[rnd.Next(0, 25)];
-            while((e > fi) || (fi%e == 0))
+            while ((e > fi) || (fi % e == 0))
             {
                 e = PrimeNumbers[rnd.Next(0, 25)];
             }
@@ -48,7 +49,7 @@ namespace Encryptors.Encryptors
                     Z = Z + fi;
                 }
                 aux = X;
-                X = k - ((k/X) * X);
+                X = k - ((k / X) * X);
                 k = aux;
             }
             return Z;
@@ -60,21 +61,59 @@ namespace Encryptors.Encryptors
         public string EncryptString(int p, int q, string message)
         {
             SetVariables(p, q);
+            List<int> numbers = new List<int>();
             string emessage = "";
-            byte[] chara = new byte[1];
-            int cbyte = 0;
-            int bbyte = 0;
-            foreach (var c in message)
+            int cbyte;
+            int bbyte;
+            int maxL = -1;
+            foreach (var cha in message)
             {
-                cbyte = Convert.ToInt32(Convert.ToByte(c));
+                cbyte = Convert.ToInt32(Convert.ToByte(cha));
                 bbyte = cbyte;
                 for (int i = 0; i < e; i++)
                 {
-                    cbyte = (cbyte * bbyte)% n;
+                    cbyte = (cbyte * bbyte) % n;
                 }
-                //1992 -> 1 - 9 - 9 - 2
-                chara[0] = Convert.ToByte(cbyte);
-                emessage += Convert.ToBase64String(chara);
+                if (cbyte > maxL)
+                {
+                    maxL = cbyte;
+                }
+                numbers.Add(cbyte);
+            }
+            maxL = maxL.ToString().Length;
+            string bnum;
+            string bchar = "";
+            string number;
+            emessage += Convert.ToString(Convert.ToByte(maxL));
+            foreach (var num in numbers)
+            {
+                number = num.ToString();
+                while (number.Length < maxL)
+                {
+                    number = "0" + number;
+                }
+                foreach (var nums in number)
+                {
+                    bnum = Convert.ToString(nums, 2);
+                    while (bnum.Length < 4)
+                    {
+                        bnum = "0" + bnum;
+                    }
+                    bchar += bnum;
+                    while (bchar.Length >= 8)
+                    {
+                        emessage += Convert.ToString(Convert.ToByte(bchar.Substring(0, 8), 2));
+                        bchar = bchar.Remove(0, 8);
+                    }
+                }
+            }
+            if (bchar.Length != 0)
+            {
+                while (bchar.Length != 8)
+                {
+                    bchar += "0";
+                }
+                emessage += Convert.ToString(Convert.ToByte(bchar, 2));
             }
             return emessage;
         }
@@ -83,34 +122,44 @@ namespace Encryptors.Encryptors
             n = N;
             d = D;
             string message = "";
-            byte[] chara = new byte[1]; 
+            List<int> numbers= new List<int>(); 
+            string nchar;
+            string number = "";
             int cbyte = 0;
             int bbyte = 0;
-            for (int i = 0; i < cmessage.Length; i++)
+            int maxl = Convert.ToInt32(Convert.ToByte(cmessage[0]));
+            cmessage = cmessage.Remove(0, 1);
+            foreach (var c in cmessage)
             {
-                cbyte = Convert.ToInt32(Convert.ToByte(cmessage[i]));
-                while (cmessage[i] == 255)
+               nchar = Convert.ToString(Convert.ToByte(c),2);
+               while(nchar.Length < 8)
+               {
+                    nchar = "0" + nchar;
+               }
+                number += Convert.ToString(Convert.ToInt32(nchar.Substring(0, 4),2));
+                nchar = nchar.Remove(0, 4);
+                number += Convert.ToString(Convert.ToInt32(nchar, 2));
+                if (number.Length>=maxl)
                 {
-                    cbyte += 255; 
-                    i++;
+                    numbers.Add(Convert.ToInt32(number.Substring(0, maxl)));
                 }
-                cbyte += message[i];
-                bbyte = cbyte;
-                i++;
+            }
+            foreach (var numb in numbers)
+            {
+                cbyte = numb;
+                bbyte = numb;
                 for (int j = 0; j < d; j++)
                 {
                     cbyte = (bbyte * cbyte) % n;
                 }
-                chara[0] = Convert.ToByte(cbyte);
-                message += Convert.ToBase64String(chara);
+                message += Convert.ToByte(cbyte);
             }
             return message;
         }
-
-
-        public string EncryptFile(string keyPath, string filePath, string savingPath, string nombre)
-        {
-            return string.Empty;
+            public string EncryptFile(string keyPath, string filePath, string savingPath, string nombre)
+            {
+                return string.Empty;
+            }
         }
     }
-}
+
