@@ -8,13 +8,13 @@ namespace Encryptors.Encryptors
     public class RSAEncryptor : IEncryptor
     {
         #region Variables
-        int n = 0;
+        public int n = 0;
         int fi = 0;
         int P = 0;
         int Q = 0;
         int e = 0;
-        int d = 0;
-        int[] PrimeNumbers = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97 };
+        public int d = 0;
+        int[] PrimeNumbers = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97};
         public void SetVariables(int p, int q)
         {
             P = p;
@@ -27,7 +27,6 @@ namespace Encryptors.Encryptors
             {
                 e = PrimeNumbers[rnd.Next(0, 25)];
             }
-            e = 17;
             d = EuclidesAlgorithm();
         }
         #endregion
@@ -63,20 +62,46 @@ namespace Encryptors.Encryptors
             SetVariables(p, q);
             string emessage = "";
             byte[] chara = new byte[1];
+            int cbyte = 0;
+            int bbyte = 0;
             foreach (var c in message)
             {
-                chara[0]= Convert.ToByte((Convert.ToInt32(Convert.ToByte(c))^ e) % n);
+                cbyte = Convert.ToInt32(Convert.ToByte(c));
+                bbyte = cbyte;
+                for (int i = 0; i < e; i++)
+                {
+                    cbyte = (cbyte * bbyte)% n;
+                }
+                //1992 -> 1 - 9 - 9 - 2
+                chara[0] = Convert.ToByte(cbyte);
                 emessage += Convert.ToBase64String(chara);
             }
             return emessage;
         }
-        public string DecryptString(string cmessage)
+        public string DecryptString(string cmessage, int N, int D)
         {
+            n = N;
+            d = D;
             string message = "";
-            byte[] chara = new byte[1];
-            foreach (var c in cmessage)
+            byte[] chara = new byte[1]; 
+            int cbyte = 0;
+            int bbyte = 0;
+            for (int i = 0; i < cmessage.Length; i++)
             {
-                chara[0] = Convert.ToByte((Convert.ToInt32(Convert.ToByte(c)) ^ d) % n);
+                cbyte = Convert.ToInt32(Convert.ToByte(cmessage[i]));
+                while (cmessage[i] == 255)
+                {
+                    cbyte += 255; 
+                    i++;
+                }
+                cbyte += message[i];
+                bbyte = cbyte;
+                i++;
+                for (int j = 0; j < d; j++)
+                {
+                    cbyte = (bbyte * cbyte) % n;
+                }
+                chara[0] = Convert.ToByte(cbyte);
                 message += Convert.ToBase64String(chara);
             }
             return message;
