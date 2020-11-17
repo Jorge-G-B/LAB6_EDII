@@ -15,8 +15,8 @@ namespace Encryptors.Encryptors
         int P = 0;
         int Q = 0;
         int e = 0;
-        public int d = 0;
-        int[] PrimeNumbers = { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97 };
+        public long d = 0;
+        int[] PrimeNumbers = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97};
         public void SetVariables(int p, int q)
         {
             P = p;
@@ -29,7 +29,6 @@ namespace Encryptors.Encryptors
             {
                 e = PrimeNumbers[rnd.Next(0, 25)];
             }
-            e = 17;
             d = EuclidesAlgorithm();
         }
         #endregion
@@ -58,7 +57,9 @@ namespace Encryptors.Encryptors
         }
         public string[] GetKeys(string p, string q)
         {
-            return new string[] { string.Empty, string.Empty };
+            SetVariables(int.Parse(p), int.Parse(q));
+            string[] keys = { n.ToString() + "," + e.ToString(), d.ToString() };
+            return keys;
         }
         public string EncryptString(int p, int q, string message)
         {
@@ -98,7 +99,7 @@ namespace Encryptors.Encryptors
                 }
                 for (int i = 0; i < maxL; i++)
                 {
-                    bnum = Convert.ToString(Convert.ToInt32(number[i]), 2);
+                    bnum = Convert.ToString(int.Parse(number.Substring(i, 1)),2);
                     while (bnum.Length < 4)
                     {
                         bnum = "0" + bnum;
@@ -124,10 +125,8 @@ namespace Encryptors.Encryptors
             }
             return emessage;
         }
-        public string DecryptString(string cmessage, int N, int D)
+        public string DecryptString(string cmessage)
         {
-            n = N;
-            d = D;
             string message = "";
             List<int> numbers= new List<int>(); 
             string nchar;
@@ -150,15 +149,16 @@ namespace Encryptors.Encryptors
                 if (number.Length >= maxl)
                 {
                     numbers.Add(Convert.ToInt32(number.Substring(0, maxl)));
+                    number = number.Remove(0, maxl);
                 }
             }
             foreach (var numb in numbers)
             {
                 cbyte = numb;
                 bbyte = numb;
-                for (int j = 1; j < d; j++)
+                for (int i = 1; i < d; i++)
                 {
-                    cbyte = (bbyte * cbyte) % n;
+                    cbyte = (cbyte * bbyte) % n;
                 }
                 bytes[0] = Convert.ToByte(cbyte);
                 message += ByteConverter.ConvertToString(bytes);

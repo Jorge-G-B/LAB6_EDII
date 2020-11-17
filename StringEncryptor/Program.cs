@@ -24,7 +24,7 @@ namespace StringEncryptor
             {
                 Console.Clear();
                 Console.WriteLine("El resultado del descifrado es el siguiente:");
-                Console.WriteLine(rSA.DecryptString(text, rSA.n, rSA.d));
+                Console.WriteLine(rSA.DecryptString(text));
                 Console.ReadLine();
             }
             Console.WriteLine("Feliz día!");
