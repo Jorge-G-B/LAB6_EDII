@@ -32,11 +32,7 @@ namespace API.Models
             {
                 Directory.CreateDirectory(savingPath);
             }
-            using var compressedFiles = new FileStream($"{savingPath}/Compressed_Files.zip", FileMode.OpenOrCreate);
-            using var zipArchive = new ZipArchive(compressedFiles, ZipArchiveMode.Create, false);
-            zipArchive.CreateEntryFromFile(keyPaths[0], "public.key");
-            zipArchive.CreateEntryFromFile(keyPaths[1], "private.key");
-            return $"{savingPath}/Compressed_Files.zip";
+            return savingPath;
         }
 
         public static string ProcessFile(string keyPath, string filePath, string savingPath, string nombre)
