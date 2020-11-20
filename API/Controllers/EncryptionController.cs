@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Net;
-using System.Net.Http;
+using System.IO.Compression;
 using System.Net.Mime;
 using API.Models;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -37,10 +34,10 @@ namespace API.Controllers
         {
             try
             {
-                var response = new HttpResponseMessage(HttpStatusCode.OK);
                 var zipPath = FileManager.GetZip(Env.ContentRootPath, p, q);
-                response.Content = new StreamContent(new FileStream(zipPath, FileMode.Open));
-                return (IActionResult)response;
+                ZipFile.CreateFromDirectory($"{zipPath}", $"{zipPath}/../keys.zip");
+                var filestream = new FileStream($"{zipPath}/../keys.zip", FileMode.Open);
+                return File(filestream, "application/zip");
             }
             catch
             {
