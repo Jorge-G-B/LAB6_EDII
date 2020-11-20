@@ -60,16 +60,17 @@ namespace Encryptors.Encryptors
             SetVariables(int.Parse(p), int.Parse(q));
             var publickeypath = $"{keyPath}/{"public.key"}";
             using var publicfileForWriting = new FileStream(publickeypath, FileMode.OpenOrCreate);
-            using var publicwriter = new BinaryWriter(publicfileForWriting);
+            using var publicwriter = new StreamWriter(publicfileForWriting);
             publicwriter.Write(n.ToString() + "," + e.ToString());
             publicwriter.Close();
             publicfileForWriting.Close();
             var privatekeypath = $"{keyPath}/{"private.key"}";
             using var privatefileForWriting = new FileStream(privatekeypath, FileMode.OpenOrCreate);
-            using var privatewriter = new BinaryWriter(publicfileForWriting);
+            using var privatewriter = new StreamWriter(privatefileForWriting);
             privatewriter.Write(n.ToString() + "," + d.ToString());
             privatewriter.Close();
             privatefileForWriting.Close();
+            ResetVariables();
         }
         public void ResetVariables()
         {
@@ -197,7 +198,7 @@ namespace Encryptors.Encryptors
             string number = "";
             int cbyte = 0;
             int bbyte = 0;
-            int maxl = Convert.ToString(n, 2).Length;
+            int maxl = Convert.ToString(M, 2).Length;
 
             while (fileForReading.Position != fileForReading.Length)
             {
