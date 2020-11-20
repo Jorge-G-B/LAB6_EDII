@@ -23,7 +23,19 @@ namespace API.Models
         {
             var encryptor = new RSAEncryptor();
             var savingPath = $"{path}/Keys";
-            if (!Directory.Exists(savingPath))
+            if (Directory.Exists(savingPath))
+            {
+                if (File.Exists($"{savingPath}/public.key"))
+                {
+                    File.Delete($"{savingPath}/public.key");
+                }
+
+                if (File.Exists($"{savingPath}/private.key"))
+                {
+                    File.Delete($"{savingPath}/private.key");
+                }
+            }
+            else
             {
                 Directory.CreateDirectory(savingPath);
             }
@@ -36,7 +48,14 @@ namespace API.Models
         {
             var encryptor = new RSAEncryptor();
             var encryptionsPath = $"{savingPath}/ProcessedFiles";
-            if (!Directory.Exists(encryptionsPath))
+            if (Directory.Exists(encryptionsPath))
+            {
+                if (File.Exists($"{encryptionsPath}/{nombre}.rsa"))
+                {
+                    File.Delete($"{encryptionsPath}/{nombre}.rsa");
+                }
+            }
+            else
             {
                 Directory.CreateDirectory(encryptionsPath);
             }
