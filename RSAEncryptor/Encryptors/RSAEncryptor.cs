@@ -17,7 +17,7 @@ namespace Encryptors.Encryptors
         int Q = 0;
         int e = 0;
         public long d = 0;
-        int[] PrimeNumbers = { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97 };
+        int[] PrimeNumbers = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97};
         public void SetVariables(int p, int q)
         {
             P = p;
@@ -57,11 +57,21 @@ namespace Encryptors.Encryptors
             }
             return Z;
         }
-        public string[] GetKeys(string p, string q, string keyPath)
+        public void GetKeys(string p, string q, string keyPath)
         {
             SetVariables(int.Parse(p), int.Parse(q));
-            string[] keys = { n.ToString() + "," + e.ToString(), d.ToString() };
-            return keys;
+            var publickeypath = $"{keyPath}/{"public.key"}";
+            using var publicfileForWriting = new FileStream(publickeypath, FileMode.OpenOrCreate);
+            using var publicwriter = new BinaryWriter(publicfileForWriting);
+            publicwriter.Write(n.ToString() + "," + e.ToString());
+            publicwriter.Close();
+            publicfileForWriting.Close();
+            var privatekeypath = $"{keyPath}/{"private.key"}";
+            using var privatefileForWriting = new FileStream(privatekeypath, FileMode.OpenOrCreate);
+            using var privatewriter = new BinaryWriter(publicfileForWriting);
+            privatewriter.Write(n.ToString() + "," + d.ToString());
+            privatewriter.Close();
+            privatefileForWriting.Close();
         }
         public void ResetVariables()
         {
@@ -123,81 +133,6 @@ namespace Encryptors.Encryptors
             return emessage;
         }
 
-        public string ProcessFile(string keyPath, string filePath, string savingPath, string nombre)
-        {
-            using var fileForReading = new FileStream(filePath, FileMode.Open);
-            using var fileForReadingKey = new FileStream(filePath, FileMode.Open);
-            using var reader = new BinaryReader(fileForReading);
-            using var readerKey = new StreamReader(fileForReadingKey);
-            var buffer = new byte[2000];
-            var fileRoute = $"{savingPath}/{nombre + ".txt"}";
-            using var fileForWriting = new FileStream(fileRoute, FileMode.OpenOrCreate);
-            using var writer = new BinaryWriter(fileForWriting);
-
-            int nEn = n;
-            int eEn = e;
-            List<string> numbers = new List<string>();
-            List<int> numberst = new List<int>();
-            byte[] bytes = new byte[1];
-            int cbyte;
-            int bbyte;
-            string bchar = "";
-            int maxL = Convert.ToString(n, 2).Length;
-
-            while (fileForReading.Position != fileForReading.Length)
-            {
-                buffer = reader.ReadBytes(buffer.Length);
-                
-                foreach (var cha in buffer)
-                {
-                    cbyte = Convert.ToInt32(cha);
-                    bbyte = cbyte;
-                    for (int i = 1; i < e; i++)
-                    {
-                        cbyte = (cbyte * bbyte) % n;
-                    }
-                    numbers.Add(Convert.ToString(cbyte, 2));
-                    numberst.Add(cbyte);
-                }
-                string number = "";
-               
-                foreach (var num in numbers)
-                {
-                    number = num;
-                    while (number.Length < maxL)
-                    {
-                        number = "0" + number;
-                    }
-                    bchar += number;
-                }
-                while (bchar.Length >= 8)
-                {
-                    bytes[0] = Convert.ToByte(bchar.Substring(0, 8), 2);
-                    writer.Write(ByteConverter.ConvertToString(bytes));
-                    bchar = bchar.Remove(0, 8);
-                }
-            }            
-            if (bchar.Length != 0)
-            {
-                while (bchar.Length < 8)
-                {
-                    bchar += "0";
-                }
-                bytes[0] = Convert.ToByte(bchar, 2);
-                writer.Write(ByteConverter.ConvertToString(bytes));
-            }
-
-            ResetVariables();
-            reader.Close();
-            readerKey.Close();
-            fileForReading.Close();
-            fileForReadingKey.Close();
-            writer.Close();
-            fileForWriting.Close();
-
-            return fileRoute;
-        }
-
         #endregion
 
         #region Decryption
@@ -239,13 +174,21 @@ namespace Encryptors.Encryptors
             return message;
         }
 
-        public string DecryptFile(string keyPath, string filePath, string savingPath, string nombre)
+        public string ProcessFile(string keyPath, string filePath, string savingPath, string nombre)
         {
+            using var fileForReadingKey = new FileStream(keyPath, FileMode.Open);
+            using var readerKey = new StreamReader(fileForReadingKey);
+            string keyf = readerKey.ReadToEnd();
+            string[] Keys = keyf.Split(',');
+            int M = Convert.ToInt32(Keys[0]);
+            int P = Convert.ToInt32(Keys[1]);
+            readerKey.Close();
+            fileForReadingKey.Close();
+
             using var fileForReading = new FileStream(filePath, FileMode.Open);
-            using var fileForReadingKey = new FileStream(filePath, FileMode.Open);
             using var reader = new BinaryReader(fileForReading);
-            using var readerKey = new BinaryReader(fileForReadingKey);
             var buffer = new byte[2000];
+
             var fileRoute = $"{savingPath}/{nombre + ".txt"}";
             using var fileForWriting = new FileStream(fileRoute, FileMode.OpenOrCreate);
             using var writer = new BinaryWriter(fileForWriting);
@@ -261,6 +204,7 @@ namespace Encryptors.Encryptors
             while (fileForReading.Position != fileForReading.Length)
             {
                 buffer = reader.ReadBytes(buffer.Length);
+
                 foreach (var c in buffer)
                 {
                     nchar = Convert.ToString(c, 2);
@@ -275,13 +219,14 @@ namespace Encryptors.Encryptors
                         number = number.Remove(0, maxl);
                     }
                 }
+
                 foreach (var numb in numbers)
                 {
                     cbyte = numb;
                     bbyte = numb;
-                    for (int i = 1; i < d; i++)
+                    for (int i = 1; i < P; i++)
                     {
-                        cbyte = (cbyte * bbyte) % n;
+                        cbyte = (cbyte * bbyte) % M;
                     }
                     bytes[0] = Convert.ToByte(cbyte);
                     writer.Write(ByteConverter.ConvertToString(bytes));
