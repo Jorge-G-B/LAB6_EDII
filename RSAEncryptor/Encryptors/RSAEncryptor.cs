@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Encryptors.Utilities;
+using System.IO;
 
 namespace Encryptors.Encryptors
 {
@@ -33,6 +34,7 @@ namespace Encryptors.Encryptors
         }
         #endregion
 
+        #region Functions
         public int EuclidesAlgorithm()
         {
             int k = fi;
@@ -61,6 +63,9 @@ namespace Encryptors.Encryptors
             string[] keys = { n.ToString() + "," + e.ToString(), d.ToString() };
             return keys;
         }
+        #endregion
+
+        #region Encryption
         public string EncryptString(int p, int q, string message)
         {
             SetVariables(p, q);
@@ -110,6 +115,22 @@ namespace Encryptors.Encryptors
             }
             return emessage;
         }
+        
+        public string EncryptFile(string keyPath, string filePath, string savingPath, string nombre)
+        {
+            using var fileForReading = new FileStream(filePath, FileMode.Open);
+            using var reader = new BinaryReader(fileForReading);
+            var buffer = new byte[2000];
+            var fileRoute = $"{savingPath}/{nombre + ".txt"}";
+            using var fileForWriting = new FileStream(fileRoute, FileMode.OpenOrCreate);
+            using var writer = new BinaryWriter(fileForWriting);
+
+            return fileRoute;
+        }
+
+        #endregion
+
+        #region Decryption
         public string DecryptString(string cmessage)
         {
             string message = "";
@@ -119,20 +140,20 @@ namespace Encryptors.Encryptors
             string number = "";
             int cbyte = 0;
             int bbyte = 0;
-            int maxl = Convert.ToString(n,2).Length;
+            int maxl = Convert.ToString(n, 2).Length;
             foreach (var c in cmessage)
             {
-               nchar = Convert.ToString(ByteConverter.ConvertToByte(c),2);
-               while(nchar.Length < 8)
-               {
+                nchar = Convert.ToString(ByteConverter.ConvertToByte(c), 2);
+                while (nchar.Length < 8)
+                {
                     nchar = "0" + nchar;
-               }
-               number += nchar;
-               if (number.Length >= maxl)
-               {
-                 numbers.Add(Convert.ToInt32(number.Substring(0, maxl),2)); //Se agrega el valor resultado de la fórmula
-                 number = number.Remove(0, maxl);
-               }
+                }
+                number += nchar;
+                if (number.Length >= maxl)
+                {
+                    numbers.Add(Convert.ToInt32(number.Substring(0, maxl), 2)); //Se agrega el valor resultado de la fórmula
+                    number = number.Remove(0, maxl);
+                }
             }
             foreach (var numb in numbers)
             {
@@ -147,10 +168,8 @@ namespace Encryptors.Encryptors
             }
             return message;
         }
-            public string EncryptFile(string keyPath, string filePath, string savingPath, string nombre)
-            {
-                return string.Empty;
-            }
-        }
+
+        #endregion
     }
+}
 
