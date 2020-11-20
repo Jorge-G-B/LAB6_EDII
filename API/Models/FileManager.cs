@@ -44,22 +44,39 @@ namespace API.Models
             return savingPath;
         }
 
-        public static string ProcessFile(string keyPath, string filePath, string savingPath, string nombre)
+        public static string EncryptFile(string keyPath, string filePath, string savingPath, string nombre)
         {
             var encryptor = new RSAEncryptor();
-            var encryptionsPath = $"{savingPath}/ProcessedFiles";
+            var encryptionsPath = $"{savingPath}/Encryptions";
             if (Directory.Exists(encryptionsPath))
             {
-                if (File.Exists($"{encryptionsPath}/{nombre}.rsa"))
+                if (File.Exists($"{encryptionsPath}/{nombre}.txt"))
                 {
-                    File.Delete($"{encryptionsPath}/{nombre}.rsa");
+                    File.Delete($"{encryptionsPath}/{nombre}.txt");
                 }
             }
             else
             {
                 Directory.CreateDirectory(encryptionsPath);
             }
-            return encryptor.ProcessFile(keyPath, filePath, encryptionsPath, nombre);
+            return encryptor.EncryptFile(keyPath, filePath, encryptionsPath, nombre);
+        }
+        public static string DecryptFile(string keyPath, string filePath, string savingPath, string nombre)
+        {
+            var decryptor = new RSAEncryptor();
+            var decryptionsPath = $"{savingPath}/Decryptions";
+            if (Directory.Exists(decryptionsPath))
+            {
+                if (File.Exists($"{decryptionsPath}/{nombre}.txt"))
+                {
+                    File.Delete($"{decryptionsPath}/{nombre}.txt");
+                }
+            }
+            else
+            {
+                Directory.CreateDirectory(decryptionsPath);
+            }
+            return decryptor.DecryptFile(keyPath, filePath, decryptionsPath, nombre);
         }
     }
 }

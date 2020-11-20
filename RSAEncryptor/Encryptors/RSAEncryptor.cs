@@ -132,6 +132,81 @@ namespace Encryptors.Encryptors
             return emessage;
         }
 
+        public string EncryptFile(string keyPath, string filePath, string savingPath, string nombre)
+        {
+            using var fileForReadingKey = new FileStream(keyPath, FileMode.Open);
+            using var readerKey = new StreamReader(fileForReadingKey);
+            string keyf = readerKey.ReadToEnd();
+            string[] Keys = keyf.Split(',');
+            int M = Convert.ToInt32(Keys[0]);
+            int P = Convert.ToInt32(Keys[1]);
+            readerKey.Close();
+            fileForReadingKey.Close();
+
+            using var fileForReading = new FileStream(filePath, FileMode.Open);
+            using var reader = new BinaryReader(fileForReading);
+            var buffer = new byte[2000];
+
+            var fileRoute = $"{savingPath}/{nombre + ".txt"}";
+            using var fileForWriting = new FileStream(fileRoute, FileMode.OpenOrCreate);
+            using var writer = new BinaryWriter(fileForWriting);
+
+            List<string> numbers = new List<string>();
+            List<int> numberst = new List<int>();
+            byte[] bytes = new byte[1];
+            int cbyte;
+            int bbyte;
+            string bchar = "";
+            int maxL = Convert.ToString(M, 2).Length;
+
+            while (fileForReading.Position != fileForReading.Length)
+            {
+                buffer = reader.ReadBytes(buffer.Length);
+
+                foreach (var cha in buffer)
+                {
+                    cbyte = Convert.ToInt32(cha);
+                    bbyte = cbyte;
+                    for (int i = 1; i < P; i++)
+                    {
+                        cbyte = (cbyte * bbyte) % M;
+                    }
+                    numbers.Add(Convert.ToString(cbyte, 2));
+                    numberst.Add(cbyte);
+                }
+                string number = "";
+
+                foreach (var num in numbers)
+                {
+                    number = num;
+                    while (number.Length < maxL)
+                    {
+                        number = "0" + number;
+                    }
+                    bchar += number;
+                }
+                while (bchar.Length >= 8)
+                {
+                    bytes[0] = Convert.ToByte(bchar.Substring(0, 8), 2);
+                    writer.Write(bytes);
+                    bchar = bchar.Remove(0, 8);
+                }
+                numbers.Clear();
+            }
+            if (bchar.Length != 0)
+            {
+
+                while (bchar.Length < 8)
+                {
+                    bchar += "0";
+                }
+                bytes[0] = Convert.ToByte(bchar, 2);
+                writer.Write(bytes);
+            }
+
+            return fileRoute;
+        }
+
         #endregion
 
         #region Decryption
@@ -173,7 +248,7 @@ namespace Encryptors.Encryptors
             return message;
         }
 
-        public string ProcessFile(string keyPath, string filePath, string savingPath, string nombre)
+        public string DecryptFile(string keyPath, string filePath, string savingPath, string nombre)
         {
             using var fileForReadingKey = new FileStream(keyPath, FileMode.Open);
             using var readerKey = new StreamReader(fileForReadingKey);
@@ -228,8 +303,9 @@ namespace Encryptors.Encryptors
                         cbyte = (cbyte * bbyte) % M;
                     }
                     bytes[0] = Convert.ToByte(cbyte);
-                    writer.Write(ByteConverter.ConvertToString(bytes));
+                    writer.Write(bytes);
                 }
+                numbers.Clear();
             }
 
             ResetVariables();
@@ -242,6 +318,7 @@ namespace Encryptors.Encryptors
 
             return fileRoute;
         }
+
 
         #endregion
     }
