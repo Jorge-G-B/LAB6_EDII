@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Encryptors.Utilities;
 using System.IO;
+using System.Linq;
 
 namespace Encryptors.Encryptors
 {
@@ -55,6 +56,16 @@ namespace Encryptors.Encryptors
             }
             return Z;
         }
+
+        public static bool IsPrime(int number)
+        {
+            if (number > 1)
+            {
+                return Enumerable.Range(1, number).Where(x => number % x == 0).SequenceEqual(new[] { 1, number });
+            }
+            return false;
+        }
+
         public void GetKeys(string p, string q, string keyPath)
         {
             SetVariables(int.Parse(p), int.Parse(q));

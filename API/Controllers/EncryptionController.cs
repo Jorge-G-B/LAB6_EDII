@@ -34,10 +34,17 @@ namespace API.Controllers
         {
             try
             {
-                var zipPath = FileManager.GetZip(Env.ContentRootPath, p, q);
-                ZipFile.CreateFromDirectory($"{zipPath}", $"{zipPath}/../keys.zip");
-                var filestream = new FileStream($"{zipPath}/../keys.zip", FileMode.Open);
-                return File(filestream, "application/zip");
+                if (FileManager.PQValidness(p, q))
+                {
+                    var zipPath = FileManager.GetZip(Env.ContentRootPath, p, q);
+                    ZipFile.CreateFromDirectory($"{zipPath}", $"{zipPath}/../keys.zip");
+                    var filestream = new FileStream($"{zipPath}/../keys.zip", FileMode.Open);
+                    return File(filestream, "application/zip");
+                }
+                else
+                {
+                    return StatusCode(500, "El formato ingresado de p y q no es válido.");
+                }
             }
             catch
             {

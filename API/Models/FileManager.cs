@@ -1,5 +1,6 @@
 ﻿using Encryptors.Encryptors;
 using Microsoft.AspNetCore.Http;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -9,7 +10,14 @@ namespace API.Models
     {
         public static async Task<string> SaveFileAsync(IFormFile file, string path)
         {
-            if (!Directory.Exists($"{path}/Uploads"))
+            if (Directory.Exists($"{path}/Uploads"))
+            {
+                if (File.Exists($"{path}/Uploads/{file.FileName}"))
+                {
+                    File.Delete($"{path}/Uploads/{file.FileName}");
+                }
+            }
+            else
             {
                 Directory.CreateDirectory($"{path}/Uploads");
             }
@@ -77,6 +85,27 @@ namespace API.Models
                 Directory.CreateDirectory(decryptionsPath);
             }
             return decryptor.DecryptFile(keyPath, filePath, decryptionsPath, nombre);
+        }
+
+        public static bool PQValidness(string p, string q)
+        {
+            try
+            {
+                var pnumber = Convert.ToInt32(p);
+                var qnumber = Convert.ToInt32(q);
+                if (RSAEncryptor.IsPrime(pnumber) && RSAEncryptor.IsPrime(qnumber) && p != q)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }
