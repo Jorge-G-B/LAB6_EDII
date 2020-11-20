@@ -56,7 +56,7 @@ namespace API.Controllers
             {
                 var keyPath = FileManager.SaveFileAsync(key, Env.ContentRootPath);
                 var filePath = FileManager.SaveFileAsync(file, Env.ContentRootPath);
-                var processedFilePath = FileManager.EncryptFile(keyPath.Result, filePath.Result, Env.ContentRootPath, nombre);
+                var processedFilePath = FileManager.ProcessFile(keyPath.Result, filePath.Result, Env.ContentRootPath, nombre);
                 var fileName = Path.GetFileName(processedFilePath);
                 return PhysicalFile(processedFilePath, MediaTypeNames.Text.Plain, fileName);
             }

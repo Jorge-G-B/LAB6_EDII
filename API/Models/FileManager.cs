@@ -26,8 +26,8 @@ namespace API.Models
         public static string GetZip(string path, string p, string q)
         {
             var encryptor = new RSAEncryptor();
-            var keyPaths = encryptor.GetKeys(p, q);
             var savingPath = $"{path}/Keys";
+            var keyPaths = encryptor.GetKeys(p, q, savingPath);
             if (!Directory.Exists(savingPath))
             {
                 Directory.CreateDirectory(savingPath);
@@ -39,26 +39,15 @@ namespace API.Models
             return $"{savingPath}/Compressed_Files.zip";
         }
 
-        public static string EncryptFile(string keyPath, string filePath, string savingPath, string nombre)
+        public static string ProcessFile(string keyPath, string filePath, string savingPath, string nombre)
         {
             var encryptor = new RSAEncryptor();
-            var encryptionsPath = $"{savingPath}/Encryptions";
+            var encryptionsPath = $"{savingPath}/ProcessedFiles";
             if (!Directory.Exists(encryptionsPath))
             {
                 Directory.CreateDirectory(encryptionsPath);
             }
-            return encryptor.EncryptFile(keyPath, filePath, encryptionsPath, nombre);
+            return encryptor.ProcessFile(keyPath, filePath, encryptionsPath, nombre);
         }
-        public static string DecryptFile(string keyPath, string filePath, string savingPath, string nombre)
-        {
-            var decryptor = new RSAEncryptor();
-            var decryptionsPath = $"{savingPath}/Decryptions";
-            if (!Directory.Exists(decryptionsPath))
-            {
-                Directory.CreateDirectory(decryptionsPath);
-            }
-            return decryptor.DecryptFile(keyPath, filePath, decryptionsPath, nombre);
-        }
-
     }
 }

@@ -57,7 +57,7 @@ namespace Encryptors.Encryptors
             }
             return Z;
         }
-        public string[] GetKeys(string p, string q)
+        public string[] GetKeys(string p, string q, string keyPath)
         {
             SetVariables(int.Parse(p), int.Parse(q));
             string[] keys = { n.ToString() + "," + e.ToString(), d.ToString() };
@@ -123,7 +123,7 @@ namespace Encryptors.Encryptors
             return emessage;
         }
 
-        public string EncryptFile(string keyPath, string filePath, string savingPath, string nombre)
+        public string ProcessFile(string keyPath, string filePath, string savingPath, string nombre)
         {
             using var fileForReading = new FileStream(filePath, FileMode.Open);
             using var fileForReadingKey = new FileStream(filePath, FileMode.Open);
@@ -244,7 +244,7 @@ namespace Encryptors.Encryptors
             using var fileForReading = new FileStream(filePath, FileMode.Open);
             using var fileForReadingKey = new FileStream(filePath, FileMode.Open);
             using var reader = new BinaryReader(fileForReading);
-            using var readerKey = new StreamReader(fileForReadingKey);
+            using var readerKey = new BinaryReader(fileForReadingKey);
             var buffer = new byte[2000];
             var fileRoute = $"{savingPath}/{nombre + ".txt"}";
             using var fileForWriting = new FileStream(fileRoute, FileMode.OpenOrCreate);
