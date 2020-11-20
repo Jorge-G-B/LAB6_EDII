@@ -23,7 +23,7 @@ namespace API.Models
         {
             var encryptor = new RSAEncryptor();
             var savingPath = $"{path}/Keys";
-            var keyPaths = encryptor.GetKeys(p, q, savingPath);
+            encryptor.GetKeys(p, q, savingPath);
             if (!Directory.Exists(savingPath))
             {
                 Directory.CreateDirectory(savingPath);
