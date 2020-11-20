@@ -16,7 +16,7 @@ namespace Encryptors.Encryptors
         int Q = 0;
         int e = 0;
         public long d = 0;
-        int[] PrimeNumbers = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97};
+        int[] PrimeNumbers = { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97 };
         public void SetVariables(int p, int q)
         {
             P = p;
@@ -65,6 +65,7 @@ namespace Encryptors.Encryptors
         {
             SetVariables(p, q);
             List<string> numbers = new List<string>();
+            List<int> numberst = new List<int>();
             string emessage = "";
             byte[] bytes = new byte[1];
             int cbyte;
@@ -78,12 +79,11 @@ namespace Encryptors.Encryptors
                 {
                     cbyte = (cbyte * bbyte) % n;
                 }
-                numbers.Add(Convert.ToString(cbyte,2));
+                numbers.Add(Convert.ToString(cbyte, 2));
+                numberst.Add(cbyte);
             }
             string number = "";
             string bchar = "";
-            bytes[0] = Convert.ToByte(maxL);
-            emessage += ByteConverter.ConvertToString(bytes);
             foreach (var num in numbers)
             {
                 number = num;
