@@ -64,12 +64,12 @@ namespace Encryptors.Encryptors
         public string EncryptString(int p, int q, string message)
         {
             SetVariables(p, q);
-            List<long> numbers = new List<long>();
+            List<string> numbers = new List<string>();
             string emessage = "";
             byte[] bytes = new byte[1];
-            long cbyte;
-            long bbyte;
-            long maxL = -1;
+            int cbyte;
+            int bbyte;
+            int maxL = Convert.ToString(n, 2).Length;
             foreach (var cha in message)
             {
                 cbyte = Convert.ToInt32(Convert.ToByte(cha));
@@ -78,45 +78,30 @@ namespace Encryptors.Encryptors
                 {
                     cbyte = (cbyte * bbyte) % n;
                 }
-                if (cbyte > maxL)
-                {
-                    maxL = cbyte;
-                }
-                numbers.Add(cbyte);
+                numbers.Add(Convert.ToString(cbyte,2));
             }
-            maxL = maxL.ToString().Length;
-            string bnum;
+            string number = "";
             string bchar = "";
-            string number;
             bytes[0] = Convert.ToByte(maxL);
             emessage += ByteConverter.ConvertToString(bytes);
             foreach (var num in numbers)
             {
-                number = num.ToString();
+                number = num;
                 while (number.Length < maxL)
                 {
                     number = "0" + number;
                 }
-                for (int i = 0; i < maxL; i++)
-                {
-                    bnum = Convert.ToString(int.Parse(number.Substring(i, 1)),2);
-                    while (bnum.Length < 4)
-                    {
-                        bnum = "0" + bnum;
-                    }
-                    bchar += bnum;
-                    while (bchar.Length >= 8)
-                    {
-                        bytes[0] = Convert.ToByte(bchar.Substring(0, 8), 2);
-                        emessage += ByteConverter.ConvertToString(bytes);
-                        bchar = bchar.Remove(0, 8);
-                    }
-                }
-                   
+                bchar += number;
+            }
+            while(bchar.Length >= 8)
+            {
+                bytes[0] = Convert.ToByte(bchar.Substring(0, 8), 2);
+                emessage += ByteConverter.ConvertToString(bytes);
+                bchar = bchar.Remove(0, 8);
             }
             if (bchar.Length != 0)
             {
-                while (bchar.Length != 8)
+                while (bchar.Length < 8)
                 {
                     bchar += "0";
                 }
@@ -128,14 +113,13 @@ namespace Encryptors.Encryptors
         public string DecryptString(string cmessage)
         {
             string message = "";
-            List<int> numbers= new List<int>(); 
+            List<int> numbers = new List<int>();
             string nchar;
             byte[] bytes = new byte[1];
             string number = "";
             int cbyte = 0;
             int bbyte = 0;
-            int maxl = Convert.ToInt32(ByteConverter.ConvertToByte(cmessage[0]));
-            cmessage = cmessage.Remove(0, 1);
+            int maxl = Convert.ToString(n,2).Length;
             foreach (var c in cmessage)
             {
                nchar = Convert.ToString(ByteConverter.ConvertToByte(c),2);
@@ -143,14 +127,12 @@ namespace Encryptors.Encryptors
                {
                     nchar = "0" + nchar;
                }
-                number += Convert.ToString(Convert.ToInt32(nchar.Substring(0, 4),2));
-                nchar = nchar.Remove(0, 4);
-                number += Convert.ToString(Convert.ToInt32(nchar, 2));
-                if (number.Length >= maxl)
-                {
-                    numbers.Add(Convert.ToInt32(number.Substring(0, maxl)));
-                    number = number.Remove(0, maxl);
-                }
+               number += nchar;
+               if (number.Length >= maxl)
+               {
+                 numbers.Add(Convert.ToInt32(number.Substring(0, maxl),2)); //Se agrega el valor resultado de la fórmula
+                 number = number.Remove(0, maxl);
+               }
             }
             foreach (var numb in numbers)
             {
