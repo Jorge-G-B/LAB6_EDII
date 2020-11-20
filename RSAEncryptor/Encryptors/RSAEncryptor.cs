@@ -45,7 +45,7 @@ namespace Encryptors.Encryptors
                 aux = Z;
                 Z = Y - ((k / X) * Z);
                 Y = aux;
-                if (Z < 0)
+                while(Z < 0)
                 {
                     Z = Z + fi;
                 }
