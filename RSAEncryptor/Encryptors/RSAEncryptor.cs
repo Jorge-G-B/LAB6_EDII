@@ -63,6 +63,13 @@ namespace Encryptors.Encryptors
             string[] keys = { n.ToString() + "," + e.ToString(), d.ToString() };
             return keys;
         }
+        public void ResetVariables()
+        {
+            int n = 0;
+            int e = 0;
+            long d = 0;
+        }
+
         #endregion
 
         #region Encryption
@@ -115,15 +122,78 @@ namespace Encryptors.Encryptors
             }
             return emessage;
         }
-        
+
         public string EncryptFile(string keyPath, string filePath, string savingPath, string nombre)
         {
             using var fileForReading = new FileStream(filePath, FileMode.Open);
+            using var fileForReadingKey = new FileStream(filePath, FileMode.Open);
             using var reader = new BinaryReader(fileForReading);
+            using var readerKey = new StreamReader(fileForReadingKey);
             var buffer = new byte[2000];
             var fileRoute = $"{savingPath}/{nombre + ".txt"}";
             using var fileForWriting = new FileStream(fileRoute, FileMode.OpenOrCreate);
             using var writer = new BinaryWriter(fileForWriting);
+
+            int nEn = n;
+            int eEn = e;
+            List<string> numbers = new List<string>();
+            List<int> numberst = new List<int>();
+            byte[] bytes = new byte[1];
+            int cbyte;
+            int bbyte;
+            string bchar = "";
+            int maxL = Convert.ToString(n, 2).Length;
+
+            while (fileForReading.Position != fileForReading.Length)
+            {
+                buffer = reader.ReadBytes(buffer.Length);
+                
+                foreach (var cha in buffer)
+                {
+                    cbyte = Convert.ToInt32(cha);
+                    bbyte = cbyte;
+                    for (int i = 1; i < e; i++)
+                    {
+                        cbyte = (cbyte * bbyte) % n;
+                    }
+                    numbers.Add(Convert.ToString(cbyte, 2));
+                    numberst.Add(cbyte);
+                }
+                string number = "";
+               
+                foreach (var num in numbers)
+                {
+                    number = num;
+                    while (number.Length < maxL)
+                    {
+                        number = "0" + number;
+                    }
+                    bchar += number;
+                }
+                while (bchar.Length >= 8)
+                {
+                    bytes[0] = Convert.ToByte(bchar.Substring(0, 8), 2);
+                    writer.Write(ByteConverter.ConvertToString(bytes));
+                    bchar = bchar.Remove(0, 8);
+                }
+            }            
+            if (bchar.Length != 0)
+            {
+                while (bchar.Length < 8)
+                {
+                    bchar += "0";
+                }
+                bytes[0] = Convert.ToByte(bchar, 2);
+                writer.Write(ByteConverter.ConvertToString(bytes));
+            }
+
+            ResetVariables();
+            reader.Close();
+            readerKey.Close();
+            fileForReading.Close();
+            fileForReadingKey.Close();
+            writer.Close();
+            fileForWriting.Close();
 
             return fileRoute;
         }
@@ -151,7 +221,7 @@ namespace Encryptors.Encryptors
                 number += nchar;
                 if (number.Length >= maxl)
                 {
-                    numbers.Add(Convert.ToInt32(number.Substring(0, maxl), 2)); //Se agrega el valor resultado de la fórmula
+                    numbers.Add(Convert.ToInt32(number.Substring(0, maxl), 2)); 
                     number = number.Remove(0, maxl);
                 }
             }
@@ -167,6 +237,66 @@ namespace Encryptors.Encryptors
                 message += ByteConverter.ConvertToString(bytes);
             }
             return message;
+        }
+
+        public string DecryptFile(string keyPath, string filePath, string savingPath, string nombre)
+        {
+            using var fileForReading = new FileStream(filePath, FileMode.Open);
+            using var fileForReadingKey = new FileStream(filePath, FileMode.Open);
+            using var reader = new BinaryReader(fileForReading);
+            using var readerKey = new StreamReader(fileForReadingKey);
+            var buffer = new byte[2000];
+            var fileRoute = $"{savingPath}/{nombre + ".txt"}";
+            using var fileForWriting = new FileStream(fileRoute, FileMode.OpenOrCreate);
+            using var writer = new BinaryWriter(fileForWriting);
+
+            List<int> numbers = new List<int>();
+            string nchar;
+            byte[] bytes = new byte[1];
+            string number = "";
+            int cbyte = 0;
+            int bbyte = 0;
+            int maxl = Convert.ToString(n, 2).Length;
+
+            while (fileForReading.Position != fileForReading.Length)
+            {
+                buffer = reader.ReadBytes(buffer.Length);
+                foreach (var c in buffer)
+                {
+                    nchar = Convert.ToString(c, 2);
+                    while (nchar.Length < 8)
+                    {
+                        nchar = "0" + nchar;
+                    }
+                    number += nchar;
+                    if (number.Length >= maxl)
+                    {
+                        numbers.Add(Convert.ToInt32(number.Substring(0, maxl), 2));
+                        number = number.Remove(0, maxl);
+                    }
+                }
+                foreach (var numb in numbers)
+                {
+                    cbyte = numb;
+                    bbyte = numb;
+                    for (int i = 1; i < d; i++)
+                    {
+                        cbyte = (cbyte * bbyte) % n;
+                    }
+                    bytes[0] = Convert.ToByte(cbyte);
+                    writer.Write(ByteConverter.ConvertToString(bytes));
+                }
+            }
+
+            ResetVariables();
+            reader.Close();
+            readerKey.Close();
+            fileForReading.Close();
+            fileForReadingKey.Close();
+            writer.Close();
+            fileForWriting.Close();
+
+            return fileRoute;
         }
 
         #endregion

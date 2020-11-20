@@ -49,5 +49,16 @@ namespace API.Models
             }
             return encryptor.EncryptFile(keyPath, filePath, encryptionsPath, nombre);
         }
+        public static string DecryptFile(string keyPath, string filePath, string savingPath, string nombre)
+        {
+            var decryptor = new RSAEncryptor();
+            var decryptionsPath = $"{savingPath}/Decryptions";
+            if (!Directory.Exists(decryptionsPath))
+            {
+                Directory.CreateDirectory(decryptionsPath);
+            }
+            return decryptor.DecryptFile(keyPath, filePath, decryptionsPath, nombre);
+        }
+
     }
 }
