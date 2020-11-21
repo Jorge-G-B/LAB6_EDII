@@ -58,9 +58,8 @@ namespace API.Controllers
         public async System.Threading.Tasks.Task<IActionResult> EncryptAndDecryptAsync(string nombre, [FromForm]IFormFile key, [FromForm]IFormFile file)
         {
             try
-            {
+            { 
                 var keyPath = await FileManager.SaveFileAsync(key, Env.ContentRootPath);
-                var originalKey = key.FileName;
                 var filePath = await FileManager.SaveFileAsync(file, Env.ContentRootPath);
                 var processedFilePath = FileManager.ProcessFile(keyPath, filePath, Env.ContentRootPath, nombre);
                 var fileName = Path.GetFileName(processedFilePath);

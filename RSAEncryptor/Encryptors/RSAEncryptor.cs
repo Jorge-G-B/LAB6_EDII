@@ -16,7 +16,7 @@ namespace Encryptors.Encryptors
         int Q = 0;
         int e = 0;
         long d = 0;
-        int[] PrimeNumbers = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97};
+        int[] PrimeNumbers = { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97 };
         public void SetVariables(int p, int q)
         {
             P = p;
@@ -46,7 +46,7 @@ namespace Encryptors.Encryptors
                 aux = Z;
                 Z = Y - ((k / X) * Z);
                 Y = aux;
-                while(Z < 0)
+                while (Z < 0)
                 {
                     Z = Z + fi;
                 }
@@ -125,7 +125,7 @@ namespace Encryptors.Encryptors
                 }
                 bchar += number;
             }
-            while(bchar.Length >= 8)
+            while (bchar.Length >= 8)
             {
                 bytes[0] = Convert.ToByte(bchar.Substring(0, 8), 2);
                 emessage += ByteConverter.ConvertToString(bytes);
@@ -238,7 +238,7 @@ namespace Encryptors.Encryptors
                 number += nchar;
                 if (number.Length >= maxl)
                 {
-                    numbers.Add(Convert.ToInt32(number.Substring(0, maxl), 2)); 
+                    numbers.Add(Convert.ToInt32(number.Substring(0, maxl), 2));
                     number = number.Remove(0, maxl);
                 }
             }
@@ -329,4 +329,3 @@ namespace Encryptors.Encryptors
         #endregion
     }
 }
-
