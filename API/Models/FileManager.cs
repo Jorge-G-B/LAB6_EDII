@@ -90,5 +90,13 @@ namespace API.Models
                 return false;
             }
         }
+
+        public static void DeleteZip(string zipPath)
+        {
+            if (System.IO.File.Exists($"{zipPath}/../keys.zip"))
+            {
+                System.IO.File.Delete($"{zipPath}/../keys.zip");
+            }
+        }
     }
 }

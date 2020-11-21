@@ -37,6 +37,7 @@ namespace API.Controllers
                 if (FileManager.PQValidness(p, q))
                 {
                     var zipPath = FileManager.GetZip(Env.ContentRootPath, p, q);
+                    FileManager.DeleteZip(zipPath);
                     ZipFile.CreateFromDirectory($"{zipPath}", $"{zipPath}/../keys.zip");
                     var filestream = new FileStream($"{zipPath}/../keys.zip", FileMode.Open);
                     return File(filestream, "application/zip");
