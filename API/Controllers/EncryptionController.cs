@@ -44,7 +44,7 @@ namespace API.Controllers
                 }
                 else
                 {
-                    return StatusCode(500, "El formato ingresado de p y q no es válido.");
+                    return StatusCode(500, "El formato ingresado de p y q no es válido. Su multiplicación debe ser mínimo 256 y deben ser primos diferentes.");
                 }
             }
             catch
