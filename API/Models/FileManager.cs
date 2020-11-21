@@ -52,15 +52,28 @@ namespace API.Models
             return savingPath;
         }
 
+        public static string ProcessFile(string keyPath, string filePath, string savingPath, string nombre)
+        {
+            var path = Path.GetExtension(filePath);
+            if (Path.GetExtension(filePath) == ".rsa")
+            {
+                return DecryptFile(keyPath, filePath, savingPath, nombre);
+            }
+            else
+            {
+                return EncryptFile(keyPath, filePath, savingPath, nombre);
+            }
+        }
+
         public static string EncryptFile(string keyPath, string filePath, string savingPath, string nombre)
         {
             var encryptor = new RSAEncryptor();
             var encryptionsPath = $"{savingPath}/Encryptions";
             if (Directory.Exists(encryptionsPath))
             {
-                if (File.Exists($"{encryptionsPath}/{nombre}.txt"))
+                if (File.Exists($"{encryptionsPath}/{nombre}.rsa"))
                 {
-                    File.Delete($"{encryptionsPath}/{nombre}.txt");
+                    File.Delete($"{encryptionsPath}/{nombre}.rsa");
                 }
             }
             else
@@ -69,15 +82,16 @@ namespace API.Models
             }
             return encryptor.EncryptFile(keyPath, filePath, encryptionsPath, nombre);
         }
+
         public static string DecryptFile(string keyPath, string filePath, string savingPath, string nombre)
         {
             var decryptor = new RSAEncryptor();
             var decryptionsPath = $"{savingPath}/Decryptions";
             if (Directory.Exists(decryptionsPath))
             {
-                if (File.Exists($"{decryptionsPath}/{nombre}.txt"))
+                if (File.Exists($"{decryptionsPath}/{nombre}.rsa"))
                 {
-                    File.Delete($"{decryptionsPath}/{nombre}.txt");
+                    File.Delete($"{decryptionsPath}/{nombre}.rsa");
                 }
             }
             else

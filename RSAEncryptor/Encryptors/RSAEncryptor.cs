@@ -10,12 +10,12 @@ namespace Encryptors.Encryptors
     public class RSAEncryptor : IEncryptor
     {
         #region Variables
-        public int n = 0;
+        int n = 0;
         int fi = 0;
         int P = 0;
         int Q = 0;
         int e = 0;
-        public long d = 0;
+        long d = 0;
         int[] PrimeNumbers = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97};
         public void SetVariables(int p, int q)
         {
@@ -85,9 +85,9 @@ namespace Encryptors.Encryptors
         }
         public void ResetVariables()
         {
-            int n = 0;
-            int e = 0;
-            long d = 0;
+            n = 0;
+            e = 0;
+            d = 0;
         }
 
         #endregion
@@ -158,7 +158,7 @@ namespace Encryptors.Encryptors
             using var reader = new BinaryReader(fileForReading);
             var buffer = new byte[2000];
 
-            var fileRoute = $"{savingPath}/{nombre + ".txt"}";
+            var fileRoute = $"{savingPath}/{nombre + ".rsa"}";
             using var fileForWriting = new FileStream(fileRoute, FileMode.OpenOrCreate);
             using var writer = new BinaryWriter(fileForWriting);
 
@@ -217,7 +217,6 @@ namespace Encryptors.Encryptors
 
             return fileRoute;
         }
-
         #endregion
 
         #region Decryption
@@ -228,8 +227,6 @@ namespace Encryptors.Encryptors
             string nchar;
             byte[] bytes = new byte[1];
             string number = "";
-            int cbyte = 0;
-            int bbyte = 0;
             int maxl = Convert.ToString(n, 2).Length;
             foreach (var c in cmessage)
             {
@@ -247,8 +244,8 @@ namespace Encryptors.Encryptors
             }
             foreach (var numb in numbers)
             {
-                cbyte = numb;
-                bbyte = numb;
+                int cbyte = numb;
+                int bbyte = numb;
                 for (int i = 1; i < d; i++)
                 {
                     cbyte = (cbyte * bbyte) % n;
@@ -274,7 +271,7 @@ namespace Encryptors.Encryptors
             using var reader = new BinaryReader(fileForReading);
             var buffer = new byte[2000];
 
-            var fileRoute = $"{savingPath}/{nombre + ".txt"}";
+            var fileRoute = $"{savingPath}/{nombre + ".rsa"}";
             using var fileForWriting = new FileStream(fileRoute, FileMode.OpenOrCreate);
             using var writer = new BinaryWriter(fileForWriting);
 
@@ -329,8 +326,6 @@ namespace Encryptors.Encryptors
 
             return fileRoute;
         }
-
-
         #endregion
     }
 }
