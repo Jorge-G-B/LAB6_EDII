@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Net;
-using System.Net.Http;
+using System.IO.Compression;
 using System.Net.Mime;
 using API.Models;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -37,10 +34,18 @@ namespace API.Controllers
         {
             try
             {
-                var response = new HttpResponseMessage(HttpStatusCode.OK);
-                var zipPath = FileManager.GetZip(Env.ContentRootPath, p, q);
-                response.Content = new StreamContent(new FileStream(zipPath, FileMode.Open));
-                return (IActionResult)response;
+                if (FileManager.PQValidness(p, q))
+                {
+                    var zipPath = FileManager.GetZip(Env.ContentRootPath, p, q);
+                    FileManager.DeleteZip(zipPath);
+                    ZipFile.CreateFromDirectory($"{zipPath}", $"{zipPath}/../keys.zip");
+                    var filestream = new FileStream($"{zipPath}/../keys.zip", FileMode.Open);
+                    return File(filestream, "application/zip");
+                }
+                else
+                {
+                    return StatusCode(500, "El formato ingresado de p y q no es válido.");
+                }
             }
             catch
             {
@@ -50,13 +55,14 @@ namespace API.Controllers
 
         [HttpPost]
         [Route("/api/rsa/{nombre}")]
-        public IActionResult Encrypt(string nombre, [FromForm]IFormFile key, [FromForm]IFormFile file)
+        public async System.Threading.Tasks.Task<IActionResult> EncryptAndDecryptAsync(string nombre, [FromForm]IFormFile key, [FromForm]IFormFile file)
         {
             try
             {
-                var keyPath = FileManager.SaveFileAsync(key, Env.ContentRootPath);
-                var filePath = FileManager.SaveFileAsync(file, Env.ContentRootPath);
-                var processedFilePath = FileManager.EncryptFile(keyPath.Result, filePath.Result, Env.ContentRootPath, nombre);
+                var keyPath = await FileManager.SaveFileAsync(key, Env.ContentRootPath);
+                var originalKey = key.FileName;
+                var filePath = await FileManager.SaveFileAsync(file, Env.ContentRootPath);
+                var processedFilePath = FileManager.ProcessFile(keyPath, filePath, Env.ContentRootPath, nombre);
                 var fileName = Path.GetFileName(processedFilePath);
                 return PhysicalFile(processedFilePath, MediaTypeNames.Text.Plain, fileName);
             }

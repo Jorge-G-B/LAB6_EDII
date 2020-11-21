@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Encryptors.Interfaces
+﻿namespace Encryptors.Interfaces
 {
     interface IEncryptor
     {
-        string[] GetKeys(string p, string q);
+        void GetKeys(string p, string q, string keyPath);
+        string DecryptFile(string keyPath, string filePath, string savingPath, string nombre);
         string EncryptFile(string keyPath, string filePath, string savingPath, string nombre);
     }
 }

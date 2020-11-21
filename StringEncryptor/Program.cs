@@ -17,7 +17,8 @@ namespace StringEncryptor
             string q = Console.ReadLine();
             Console.WriteLine("Se ha guardado el string con éxito para cifrar");
             Console.WriteLine("El resultado del cifrado es el siguiente:");
-            Console.WriteLine(rSA.EncryptString(Convert.ToInt32(p), Convert.ToInt32(q), text));
+            text = rSA.EncryptString(Convert.ToInt32(p), Convert.ToInt32(q), text);
+            Console.WriteLine(text);
             Console.WriteLine("¿Desea descifrarlo? | Presione 'Y'. De lo contrario, presione cualquier otra tecla.");
             if (Console.ReadKey().Key == ConsoleKey.Y)
             {
