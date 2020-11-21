@@ -107,7 +107,8 @@ namespace API.Models
             {
                 var pnumber = Convert.ToInt32(p);
                 var qnumber = Convert.ToInt32(q);
-                if (RSAEncryptor.IsPrime(pnumber) && RSAEncryptor.IsPrime(qnumber) && p != q)
+                var pqnumber = pnumber * qnumber;
+                if (RSAEncryptor.IsPrime(pnumber) && RSAEncryptor.IsPrime(qnumber) && p != q && pqnumber > 256)
                 {
                     return true;
                 }

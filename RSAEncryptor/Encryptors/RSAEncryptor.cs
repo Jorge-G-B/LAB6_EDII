@@ -16,18 +16,20 @@ namespace Encryptors.Encryptors
         int Q = 0;
         int e = 0;
         long d = 0;
-        int[] PrimeNumbers = { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97 };
         public void SetVariables(int p, int q)
         {
             P = p;
             Q = q;
             n = P * Q;
             fi = (P - 1) * (Q - 1);
-            Random rnd = new Random();
-            e = PrimeNumbers[rnd.Next(0, 25)];
-            while ((e > fi) || (fi % e == 0))
+            e = 0;
+            for (int i = 2; i < fi; i++)
             {
-                e = PrimeNumbers[rnd.Next(0, 25)];
+                if (IsPrime(i) && fi % i != 0)
+                {
+                    e = i;
+                    break;
+                }
             }
             d = EuclidesAlgorithm();
         }
@@ -40,15 +42,14 @@ namespace Encryptors.Encryptors
             int X = e;
             int Y = fi;
             int Z = 1;
-            int aux = 0;
             while (X != 1)
             {
-                aux = Z;
+                int aux = Z;
                 Z = Y - ((k / X) * Z);
                 Y = aux;
                 while (Z < 0)
                 {
-                    Z = Z + fi;
+                    Z += fi;
                 }
                 aux = X;
                 X = k - ((k / X) * X);
