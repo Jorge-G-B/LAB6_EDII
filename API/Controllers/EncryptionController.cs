@@ -55,15 +55,28 @@ namespace API.Controllers
 
         [HttpPost]
         [Route("/api/rsa/{nombre}")]
-        public IActionResult Encrypt(string nombre, [FromForm]IFormFile key, [FromForm]IFormFile file)
+        public IActionResult EncryptAndDecrypt(string nombre, [FromForm]IFormFile key, [FromForm]IFormFile file)
         {
             try
             {
                 var keyPath = FileManager.SaveFileAsync(key, Env.ContentRootPath);
-                var filePath = FileManager.SaveFileAsync(file, Env.ContentRootPath);
-                var processedFilePath = FileManager.ProcessFile(keyPath.Result, filePath.Result, Env.ContentRootPath, nombre);
-                var fileName = Path.GetFileName(processedFilePath);
-                return PhysicalFile(processedFilePath, MediaTypeNames.Text.Plain, fileName);
+                var originalKey = key.FileName;
+                if (originalKey.Equals("public.key"))
+                {
+                    var filePath = FileManager.SaveFileAsync(file, Env.ContentRootPath);
+                    var processedFilePath = FileManager.EncryptFile(keyPath.Result, filePath.Result, Env.ContentRootPath, nombre);
+                    var fileName = Path.GetFileName(processedFilePath);
+                    return PhysicalFile(processedFilePath, MediaTypeNames.Text.Plain, fileName);
+                }
+                else if (originalKey.Equals("private.key"))
+                {
+                    var filePath = FileManager.SaveFileAsync(file, Env.ContentRootPath);
+                    var processedFilePath = FileManager.DecryptFile(keyPath.Result, filePath.Result, Env.ContentRootPath, nombre);
+                    var fileName = Path.GetFileName(processedFilePath);
+                    return PhysicalFile(processedFilePath, MediaTypeNames.Text.Plain, fileName);
+                }
+                return StatusCode(500);
+
             }
             catch 
             {
